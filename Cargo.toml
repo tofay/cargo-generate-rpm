@@ -15,7 +15,7 @@ edition = "2018"
 
 [dependencies]
 glob = "0.3.0"
-rpm-rs = {git = "http://github.com/tofay/rpm-rs", branch = "no-bin-sh-requires" } 
+rpm = {git = "http://github.com/tofay/rpm-rs", branch = "no-bin-sh-requires" } 
 toml = "0.5"
 cargo_toml = "0.11"
 getopts = "0.2"
