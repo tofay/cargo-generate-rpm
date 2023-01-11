@@ -156,6 +156,19 @@ impl Config {
             builder = builder.post_uninstall_script(post_uninstall_script);
         }
 
+
+        if let Some(repository) = match (metadata.get_str("repository")?, pkg.repository.as_ref()) {
+            (Some(v), _) => Some(v),
+            (None, None) => None,
+            (None, Some(v)) => Some(v.as_str()),
+        } {
+            builder = builder.repository(repository);
+        }
+
+        if let Some(vendor) = metadata.get_str("vendor")? {
+            builder = builder.vendor(vendor);
+        }
+
         if let Some(requires) = metadata.get_table("requires")? {
             for dependency in Self::table_to_dependencies(requires)? {
                 builder = builder.requires(dependency);
