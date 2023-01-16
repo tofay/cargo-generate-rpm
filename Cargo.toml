@@ -14,10 +14,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-glob = "0.3.0"
-rpm = {git = "http://github.com/tofay/rpm-rs", branch = "no-bin-sh-requires" } 
+glob = "0.3.1"
+rpm = {git = "http://github.com/rpm-rs/rpm", rev = "e9f8cee" } 
 toml = "0.5"
-cargo_toml = "0.13"
+cargo_toml = "0.14"
 getopts = "0.2"
 thiserror = "1"
 elf = "0.0.10"

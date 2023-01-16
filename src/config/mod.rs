@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
@@ -75,8 +76,10 @@ impl Config {
                     }
                     _ => Error::CargoToml(err),
                 })?;
-            manifest.inherit_workspace(&workspace_manifest, p.as_ref())?;
-            manifest.complete_from_path(manifest_path.as_path())?;
+            manifest.complete_from_path_and_workspace(
+                manifest_path.as_path(),
+                Some((&workspace_manifest, p.as_ref())),
+            )?;
             manifest
         } else {
             Manifest::from_path(&manifest_path).map_err(|err| match err {
@@ -176,7 +179,7 @@ impl Config {
             builder = builder.release(release);
         }
         if let Some(epoch) = metadata.get_i64("epoch")? {
-            builder = builder.epoch(epoch as i32);
+            builder = builder.epoch((epoch as u32).try_into().unwrap());
         }
 
         if let Some(pre_install_script) = metadata.get_str("pre_install_script")? {
@@ -190,6 +193,18 @@ impl Config {
         }
         if let Some(post_uninstall_script) = metadata.get_str("post_uninstall_script")? {
             builder = builder.post_uninstall_script(post_uninstall_script);
+        }
+
+        if let Some(url) = match (metadata.get_str("url")?, pkg.repository()) {
+            (Some(v), _) => Some(v),
+            (None, None) => None,
+            (None, Some(v)) => Some(v),
+        } {
+            builder = builder.url(url);
+        }
+
+        if let Some(vendor) = metadata.get_str("vendor")? {
+            builder = builder.vendor(vendor);
         }
 
         if let Some(requires) = metadata.get_table("requires")? {
